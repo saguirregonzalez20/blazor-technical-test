@@ -1,0 +1,115 @@
+﻿@page "/personas"
+
+@using BlazorCrud.Client.Services
+@using BlazorCrud.Shared
+@using CurrieTechnologies.Razor.SweetAlert2
+
+@inject SweetAlertService Swal;
+@inject IPersonaService personaService;
+
+<h3>Listado</h3>
+
+<a class="btn btn-success btn-sm mb-3" href="persona">Nuevo</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (listPersona == null)
+        {
+            <tr>
+                <td colspan="4" align="center">
+                    <img style="width:50px" src="https://media.tenor.com/On7kvXhzml4AAAAj/loading-gif.gif" />
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var item in listPersona)
+            {
+                <tr>
+                    <td>@item.Nombres</td>
+                    <td>@item.Apellidos</td>
+                    <td>@item.Email</td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm ms-2" @onclick="OnShowModalClick">
+                            <Icon Name="IconName.Person" />
+                        </button>
+                        <a class="btn btn-primary btn-sm" href="persona/@item.IdPersona">
+                            <Icon Name="IconName.Pencil" />
+                        </a>
+                        <button type="button" class="btn btn-danger btn-sm ms-2" @onclick="(() => Eliminar(item.IdPersona))">
+                            <Icon Name="IconName.Trash" />
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+
+<Modal @ref="modal" Title="Foto">
+    <BodyTemplate>
+        <Image Src="/images/placeholder.png" IsThumbnail="true" Alt="placeholder" />
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Cerrar</Button>
+        @* <Button Color="ButtonColor.Primary">Save changes</Button> *@
+    </FooterTemplate>
+</Modal>
+
+
+@code {
+
+    List<PersonaDTO>? listPersona = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listPersona = await personaService.Lista();
+    }
+
+    private async Task Eliminar(int id)
+    {
+        var resultado = await Swal.FireAsync(new SweetAlertOptions
+            {
+                Title = "Eliminar Persona",
+                Text = "Deseas eliminar a la persona?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true
+            });
+
+        if (resultado.IsConfirmed)
+        {
+            var eliminado = await personaService.Eliminar(id);
+
+            if (eliminado)
+                listPersona = listPersona!.FindAll(e => e.IdPersona != id);
+
+        }
+
+    }
+
+
+    //MODAL
+
+    private Modal modal = default!;
+
+    private async Task OnShowModalClick()
+    {
+        await modal.ShowAsync();
+    }
+
+    private async Task OnHideModalClick()
+    {
+        await modal.HideAsync();
+    }
+}

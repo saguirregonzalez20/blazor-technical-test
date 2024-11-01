@@ -1,0 +1,38 @@
+
+create database BlazorThecnical
+
+use BlazorThecnical
+
+--tablas
+
+CREATE TABLE [Persona](
+	[IdPersona] [int] primary key IDENTITY(1,1) NOT NULL,
+	[Nombres] [varchar](500) NULL,
+	[Apellidos] [varchar](500) NULL,
+	[Email] [varchar](200) NULL,
+	[Foto] [varchar](500) NULL,
+	[EnteredDate] [datetime] NULL,
+	[UpdateDate] [datetime] NULL
+)
+
+go
+
+--data
+
+
+INSERT INTO Persona (Nombres, Apellidos, Email, EnteredDate, Foto, UpdateDate)
+VALUES 
+    ('Carlos', 'Gonzales', 'carlos.gonzales@example.com', GETDATE(), NULL, NULL),
+    ('María', 'Fernandez', 'maria.fernandez@example.com', GETDATE(), NULL, NULL),
+    ('Juan', 'Perez', 'juan.perez@example.com', GETDATE(), NULL, NULL),
+    ('Ana', 'Sanchez', 'ana.sanchez@example.com', GETDATE(), NULL, NULL),
+    ('Luis', 'Rodriguez', 'luis.rodriguez@example.com', GETDATE(), NULL, NULL),
+    ('Elena', 'Martinez', 'elena.martinez@example.com', GETDATE(), NULL, NULL),
+    ('Pedro', 'Garcia', 'pedro.garcia@example.com', GETDATE(), NULL, NULL),
+    ('Sara', 'Lopez', 'sara.lopez@example.com', GETDATE(), NULL, NULL),
+    ('Claudia', 'Ortiz', 'claudia.ortiz@example.com', GETDATE(), NULL, NULL);
+go
+
+
+
+select * from Persona

@@ -1,0 +1,84 @@
+﻿@page "/persona"
+@page "/persona/{idPersonaEditar:int}"
+
+@using BlazorCrud.Shared;
+@using BlazorCrud.Client.Services;
+
+@inject IPersonaService personaService;
+@inject NavigationManager navegacion;
+
+<h3>Mantenimiento - @titulo</h3>
+
+<EditForm Model="persona" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+    <div class="mb-3">
+        <label class="form-label">Nombres</label>
+        <InputText class="form-control" @bind-Value="persona.Nombres"></InputText>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Apellidos</label>
+        <InputText class="form-control" @bind-Value="persona.Apellidos"></InputText>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" @bind-Value="persona.Email"></InputText>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Foto</label>
+        <br />
+        <Image Src="/images/placeholder.png" IsThumbnail="true" Alt="placeholder" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">
+        @btnTexto
+    </button>
+
+    <a class="btn btn-warning" href="personas">Cancelar</a> 
+
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public int idPersonaEditar { get; set; } = 0;
+
+    string titulo = string.Empty;
+    string btnTexto = string.Empty;
+
+    PersonaDTO persona = new PersonaDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (idPersonaEditar != 0)
+        {
+            persona = await personaService.Buscar(idPersonaEditar);
+            btnTexto = "Actualizar Persona";
+            titulo = "Editar Persona";
+        }
+        else
+        {
+            persona.UpdateDate = DateTime.Today;
+            btnTexto = "Guardar Persona";
+            titulo = "Nuevo Persona";
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        int idDevuelto = 0;
+        if (idPersonaEditar == 0)
+            idDevuelto = await personaService.Guardar(persona);
+        else
+            idDevuelto = await personaService.Editar(persona);
+
+
+        if (idDevuelto != 0)
+            navegacion.NavigateTo("/personas");
+
+    }
+
+}
